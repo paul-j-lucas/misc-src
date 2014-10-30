@@ -31,13 +31,11 @@
 #ifndef TRACE_BRANCH_PRINT
 #ifdef __cplusplus
 # include <iostream>
-# define TRACE_IF_BOOL bool
 # define TRACE_BRANCH_PRINT(WHAT,RESULT) \
     std::cout << "\"" __FILE__ "\":" << __LINE__ \
     << " '" WHAT "' == " << (RESULT) << std::endl
 #else
 # include <stdio.h>
-# define TRACE_IF_BOOL int
 # define TRACE_BRANCH_PRINT(WHAT,RESULT) \
     printf( "\"" __FILE__ "\":%d '" WHAT "' == %s\n", __LINE__, (RESULT) )
 #endif /* __cplusplus */
@@ -48,6 +46,11 @@
 /*****************************************************************************/
 
 #ifdef TRACE_IF
+#ifdef __cplusplus
+# define TRACE_IF_BOOL bool
+#else
+# define TRACE_IF_BOOL int
+#endif /* __cplusplus */
   /* Yes, this many levels of indirection are necessary. */
 # define TRACE_IF_HELPER3(EXPR,TEMP) \
     TRACE_IF_BOOL const TEMP = (TRACE_IF_BOOL)(EXPR); \
@@ -62,10 +65,12 @@
 
 /*****************************************************************************/
 
+/* Note that TRACE_SWITCH requires C++11.  */
+
 #if defined(TRACE_SWITCH) && __cplusplus >= 201103L
   /* Yes, this many levels of indirection are necessary. */
 # define TRACE_SWITCH_HELPER3(EXPR,TEMP) \
-    auto const TEMP = (EXPR); \
+    auto const TEMP( EXPR ); \
     TRACE_BRANCH_PRINT( "switch", TEMP ); \
     switch ( TEMP )
 # define TRACE_SWITCH_HELPER2(EXPR,ID) TRACE_SWITCH_HELPER3( EXPR, switch_##ID )
