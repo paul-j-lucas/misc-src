@@ -19,6 +19,7 @@
 */
 
 /* system */
+#include <ctime>
 #include <iomanip>
 #include <iostream>
 #include <limits>
@@ -64,6 +65,7 @@ int main() {
   PRINT_TYPE_INFO( void* );
   PRINT_TYPE_INFO( size_t );
   PRINT_TYPE_INFO( ptrdiff_t );
+  PRINT_TYPE_INFO( time_t );
   return 0;
 }
 
