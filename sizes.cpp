@@ -27,7 +27,7 @@
 using namespace std;
 
 int const limit_width  = 22;
-int const name_width   = 13;
+int const name_width   = 21;
 int const sizeof_width =  2;
 
 template<typename T>
@@ -37,6 +37,16 @@ inline T number_limit( T t ) {
 
 // Specialization for char so the limits print as int rather than char.
 inline int number_limit( char c ) {
+  return static_cast<int>( c );
+}
+
+// Specialization for signed char so the limits print as int rather than char.
+inline int number_limit( signed char c ) {
+  return static_cast<int>( c );
+}
+
+// Specialization for unsigned char so the limits print as int rather than char.
+inline int number_limit( unsigned char c ) {
   return static_cast<int>( c );
 }
 
@@ -53,19 +63,31 @@ void print_type_info( char const *type_name, T ) {
 
 int main() {
   PRINT_TYPE_INFO( bool );
+
   PRINT_TYPE_INFO( char );
+  PRINT_TYPE_INFO( signed char );
+  PRINT_TYPE_INFO( unsigned char );
   PRINT_TYPE_INFO( wchar_t );
+
   PRINT_TYPE_INFO( short );
   PRINT_TYPE_INFO( int );
   PRINT_TYPE_INFO( long );
   PRINT_TYPE_INFO( long long );
+
+  PRINT_TYPE_INFO( unsigned short );
+  PRINT_TYPE_INFO( unsigned int );
+  PRINT_TYPE_INFO( unsigned long );
+  PRINT_TYPE_INFO( unsigned long long );
+
   PRINT_TYPE_INFO( float );
   PRINT_TYPE_INFO( double );
   PRINT_TYPE_INFO( long double );
+
   PRINT_TYPE_INFO( void* );
   PRINT_TYPE_INFO( size_t );
   PRINT_TYPE_INFO( ptrdiff_t );
   PRINT_TYPE_INFO( time_t );
+
   return 0;
 }
 
