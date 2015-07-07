@@ -32,14 +32,18 @@ RM=		rm -fr
 
 # Targets.
 ARGS=		$(BIN)/args
+GETHOSTNAME=	$(BIN)/gethostname
 SIZES=		$(BIN)/sizes
-TARGETS=	$(ARGS) $(SIZES)
+TARGETS=	$(ARGS) $(GETHOSTNAME) $(SIZES)
 
 ###############################################################################
 
 all: $(TARGETS)
 
 $(ARGS): args.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
+
+$(GETHOSTNAME): gethostname.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
 
 $(SIZES): sizes.cpp
