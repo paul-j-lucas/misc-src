@@ -18,7 +18,7 @@
 **      along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* system */
+// standard
 #include <ctime>
 #include <iomanip>
 #include <iostream>
@@ -26,9 +26,9 @@
 
 using namespace std;
 
-int const limit_width  = 22;
-int const name_width   = 21;
-int const sizeof_width =  2;
+int const name_width    = 18;
+int const sizeof_width  =  2;
+int const limit_width   = 20;
 
 template<typename T>
 inline T number_limit( T t ) {
@@ -53,9 +53,9 @@ inline int number_limit( unsigned char c ) {
 template<typename T>
 void print_type_info( char const *type_name, T ) {
   cout << left << setw( name_width ) << type_name << right
-       << setw( sizeof_width ) << sizeof( T )
-       << setw( limit_width ) << number_limit( numeric_limits<T>::min() )
-       << setw( limit_width ) << number_limit( numeric_limits<T>::max() )
+       << ' ' << setw( sizeof_width ) << sizeof( T )
+       << ' ' << setw( limit_width ) << number_limit( numeric_limits<T>::min() )
+       << ' ' << setw( limit_width ) << number_limit( numeric_limits<T>::max() )
        << endl;
 }
 
