@@ -7,9 +7,9 @@ int main() {
   int result = gethostname( hostname, sizeof( hostname ) );
   if ( result == -1 ) {
     perror( NULL );
-    exit( 1 );
+    exit( EXIT_FAILURE );
   }
   printf( "%s\n", hostname );
-  exit( 0 );
+  exit( EXIT_SUCCESS );
 }
 /* vim:set et sw=2 ts=2: */

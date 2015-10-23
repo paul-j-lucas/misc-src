@@ -26,8 +26,7 @@
 #include <unistd.h>                     /* for getopt(3) */
 
 /* exit(3) status codes */
-#define EXIT_OK     0
-#define EXIT_USAGE  1
+#define EXIT_USAGE  64
 
 #define GET_SUPPRESS(X) (suppress_flags &  SUPPRESS_##X)
 #define SET_SUPPRESS(X) (suppress_flags |= SUPPRESS_##X)
@@ -95,7 +94,7 @@ int main( int argc, char *argv[] ) {
 
   }
 
-  exit( EXIT_OK );
+  exit( EXIT_SUCCESS );
 }
 
 /*****************************************************************************/
