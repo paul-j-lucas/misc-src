@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/param.h>                  /* for MAXHOSTNAMELEN */
 #include <unistd.h>
 
 int main() {
-  char hostname[ 256 ];
+  char hostname[ MAXHOSTNAMELEN ];
   int result = gethostname( hostname, sizeof( hostname ) );
   if ( result == -1 ) {
     perror( NULL );
