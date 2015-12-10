@@ -33,7 +33,7 @@
 
 char const *me;                         /* executable name */
 
-static void usage() {
+static void usage( void ) {
   fprintf( stderr,
 "usage: %s [-0hn] [-e] ...\n"
 "\n"
