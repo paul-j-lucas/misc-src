@@ -33,7 +33,7 @@
 
 char const *me;                         /* executable name */
 
-static void usage() {
+static void usage( void ) {
   fprintf( stderr,
 "usage: %s [-0hn] [-e] ...\n"
 "\n"
@@ -69,34 +69,29 @@ int main( int argc, char *argv[] ) {
       case 'h': SET_SUPPRESS( HEADER );  break;
       case 'n': SET_SUPPRESS( NUMBERS ); break;
       default : usage();
-    } /* switch */
-  } /* while */
+    } // switch
+  } // while
   argc -= optind, argv += optind;
 
   if ( !GET_SUPPRESS( HEADER ) )
     printf( "argc argv\n" );
 
   if ( GET_SUPPRESS( NUMBERS ) ) {
-
     printf( "%s\n", argv0_orig );
     for ( i = 0; i < argc; ++i )
       printf( "%s\n", argv[i] );
     if ( !GET_SUPPRESS( NULL ) )
       printf( "\\0\n" );
-
   } else {
-
     printf( "%4d %s\n", 0, argv0_orig );
     for ( i = 0; i < argc; ++i )
       printf( "%4d %s\n", i+1, argv[i] );
     if ( !GET_SUPPRESS( NULL ) )
       printf( "%4d \\0\n", i+1 );
-
   }
 
   exit( EXIT_SUCCESS );
 }
 
 /*****************************************************************************/
-
 /* vim:set et sw=2 ts=2: */
