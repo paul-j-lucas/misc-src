@@ -33,8 +33,9 @@ RM=		rm -fr
 # Targets.
 ARGS=		$(BIN)/args
 GETHOSTNAME=	$(BIN)/gethostname
+PSYSCONF=	$(BIN)/psysconf
 SIZES=		$(BIN)/sizes
-TARGETS=	$(ARGS) $(GETHOSTNAME) $(SIZES)
+TARGETS=	$(ARGS) $(GETHOSTNAME) $(PSYSCONF) $(SIZES)
 
 ###############################################################################
 
@@ -45,6 +46,9 @@ $(ARGS): args.c
 
 $(GETHOSTNAME): gethostname.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
+
+$(PSYSCONF): psysconf.c
+	$(CC) $(CXXFLAGS) $(LDFLAGS) -o $@ $<
 
 $(SIZES): sizes.cpp
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $<
