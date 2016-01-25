@@ -48,7 +48,7 @@ $(GETHOSTNAME): gethostname.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
 
 $(PSYSCONF): psysconf.c
-	$(CC) $(CXXFLAGS) $(LDFLAGS) -o $@ $<
+	$(CC) $(LDFLAGS) -o $@ $<
 
 $(SIZES): sizes.cpp
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $<
