@@ -69,6 +69,10 @@ int main() {
   PRINT_TYPE_INFO( signed char );
   PRINT_TYPE_INFO( unsigned char );
   PRINT_TYPE_INFO( wchar_t );
+#if __cplusplus >= 201103L
+  PRINT_TYPE_INFO( char16_t );
+  PRINT_TYPE_INFO( char32_t );
+#endif
 
   PRINT_TYPE_INFO( short );
   PRINT_TYPE_INFO( int );

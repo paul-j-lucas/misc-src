@@ -24,7 +24,7 @@ BIN=		$(HOME)/bin
 
 # Compiler & linker options.
 CFLAGS=		-O -Wall
-CXXFLAGS=	$(CFLAGS)
+CXXFLAGS=	$(CFLAGS) -std=c++11
 LDFLAGS=	
 
 # Commands.
@@ -48,7 +48,7 @@ $(GETHOSTNAME): gethostname.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
 
 $(PSYSCONF): psysconf.c
-	$(CC) $(CXXFLAGS) $(LDFLAGS) -o $@ $<
+	$(CC) $(LDFLAGS) -o $@ $<
 
 $(SIZES): sizes.cpp
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $<
