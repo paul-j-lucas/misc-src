@@ -49,10 +49,10 @@ $(GETHOSTNAME): gethostname.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
 
 $(MOD): mod.c
-	$(CC) $(LDFLAGS) -o $@ $<
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
 
 $(PSYSCONF): psysconf.c
-	$(CC) $(LDFLAGS) -o $@ $<
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
 
 $(SIZES): sizes.cpp
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $<
