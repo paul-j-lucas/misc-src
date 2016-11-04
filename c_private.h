@@ -8,11 +8,9 @@
  *
  *    struct my_struct {
  *      // "public" members go here
- *      // ...
  *      int shout;
- *    C_PRIVATE(my_struct)
+ *    C_PRIVATE_BEGIN(my_struct)
  *      // "private" members go here
- *      // ...
  *      int shhh;
  *    C_PRIVATE_END
  *    };
@@ -21,12 +19,12 @@
  *
  *    struct my_struct s;
  *    // ...
- *    C_PRIV(s).shhh = 0;
+ *    C_PRIVATE(s).shhh = 0;
  */
 
-#define C_PRIVATE(STRUCT) struct STRUCT##c_private {
-#define C_PRIVATE_END     } c_private;
-#define C_PRIV(OBJ)       ((OBJ).c_private)
+#define C_PRIVATE_BEGIN(STRUCT) struct STRUCT##_c_private {
+#define C_PRIVATE_END           } c_private;
+#define C_PRIVATE(OBJ)          ((OBJ).c_private)
 
 #endif /* C_PRIVATE_H */
 /* vim:set et sw=2 ts=2: */
