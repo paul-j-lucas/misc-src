@@ -22,6 +22,9 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+/*****************************************************************************/
 
 static char const *me;                  /* executable name */
 
@@ -42,7 +45,9 @@ static unsigned long long parse_ull( char const *s ) {
 /*****************************************************************************/
 
 int main( int argc, char const *argv[] ) {
-  me = argv[0];
+  me = strrchr( argv[0], '/' );         /* determine base name... */
+  me = me ? me + 1 : argv[0];           /* ...of executable */
+
   if ( --argc != 2 )
     usage();
   printf( "%llu\n", parse_ull( argv[1] ) % parse_ull( argv[2] ) );
