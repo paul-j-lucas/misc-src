@@ -23,7 +23,7 @@
 BIN=		$(HOME)/bin
 
 # Compiler & linker options.
-CFLAGS=		-O -Wall
+CFLAGS=		-O2 -Wall
 CXXFLAGS=	$(CFLAGS) -std=c++11
 LDFLAGS=	
 
@@ -33,9 +33,10 @@ RM=		rm -fr
 # Targets.
 ARGS=		$(BIN)/args
 GETHOSTNAME=	$(BIN)/gethostname
+MOD=		$(BIN)/mod
 PSYSCONF=	$(BIN)/psysconf
 SIZES=		$(BIN)/sizes
-TARGETS=	$(ARGS) $(GETHOSTNAME) $(PSYSCONF) $(SIZES)
+TARGETS=	$(ARGS) $(GETHOSTNAME) $(MOD) $(PSYSCONF) $(SIZES)
 
 ###############################################################################
 
@@ -47,8 +48,11 @@ $(ARGS): args.c
 $(GETHOSTNAME): gethostname.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
 
+$(MOD): mod.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
+
 $(PSYSCONF): psysconf.c
-	$(CC) $(LDFLAGS) -o $@ $<
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
 
 $(SIZES): sizes.cpp
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $<
