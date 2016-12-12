@@ -23,20 +23,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sysexits.h>
 
 /*****************************************************************************/
+
+typedef unsigned long long number_t;
 
 static char const *me;                  /* executable name */
 
 static void usage( void ) {
   fprintf( stderr, "usage: %s <n> <m>\n", me );
-  exit( 1 );
+  exit( EX_USAGE );
 }
 
-static unsigned long long parse_ull( char const *s ) {
+static number_t parse_ull( char const *s ) {
   char *end;
   errno = 0;
-  unsigned long long const n = strtoull( s, &end, 10 );
+  number_t const n = strtoull( s, &end, 10 );
   if ( errno )
     usage();
   return n;
@@ -50,8 +53,17 @@ int main( int argc, char const *argv[] ) {
 
   if ( --argc != 2 )
     usage();
-  printf( "%llu\n", parse_ull( argv[1] ) % parse_ull( argv[2] ) );
-  exit( EXIT_SUCCESS );
+
+  number_t const m = parse_ull( argv[2] );
+  if ( m == 0 ) {
+    fprintf( stderr, "%s: divisor must not be zero\n", me );
+    exit( EX_DATAERR );
+  }
+
+  number_t const n = parse_ull( argv[1] );
+
+  printf( "%llu\n", n % m );
+  exit( EX_OK );
 }
 
 /*****************************************************************************/
