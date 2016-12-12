@@ -3,7 +3,7 @@
 #include <sys/param.h>                  /* for MAXHOSTNAMELEN */
 #include <unistd.h>
 
-int main() {
+int main( void ) {
   char hostname[ MAXHOSTNAMELEN ];
   int result = gethostname( hostname, sizeof( hostname ) );
   if ( result == -1 ) {
