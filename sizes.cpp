@@ -27,9 +27,10 @@
 
 using namespace std;
 
-int const name_width    = 18;
-int const sizeof_width  =  2;
-int const limit_width   = 20;
+int const name_width          = 18;
+int const sizeof_width_bits   =  3;
+int const sizeof_width_bytes  =  2;
+int const limit_width         = 20;
 
 template<typename T>
 inline T number_limit( T t ) {
@@ -54,7 +55,8 @@ inline int number_limit( unsigned char c ) {
 template<typename T>
 void print_type_info( char const *type_name, T ) {
   cout << left << setw( name_width ) << type_name << right
-       << ' ' << setw( sizeof_width ) << sizeof( T )
+       << ' ' << setw( sizeof_width_bytes ) << sizeof( T )
+       << ' ' << setw( sizeof_width_bits  ) << sizeof( T ) * 8
        << ' ' << setw( limit_width ) << number_limit( numeric_limits<T>::min() )
        << ' ' << setw( limit_width ) << number_limit( numeric_limits<T>::max() )
        << endl;
