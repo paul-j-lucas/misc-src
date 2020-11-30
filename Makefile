@@ -3,7 +3,7 @@
 #	Makefile
 #	https://github.com/paul-j-lucas/misc-src
 #
-#	Copyright (C) 2014  Paul J. Lucas
+#	Copyright (C) 2014-2020  Paul J. Lucas
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ BIN=		$(HOME)/bin
 
 # Compiler & linker options.
 CFLAGS=		-O2 -Wall
-CXXFLAGS=	$(CFLAGS) -std=c++11
+CXXFLAGS=	$(CFLAGS) -std=c++2a
 LDFLAGS=	
 
 # Commands.

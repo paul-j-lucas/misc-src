@@ -2,7 +2,7 @@
 **      sizes -- print C++ types' sizes and limits
 **      sizes.cpp
 **
-**      Copyright (C) 2014  Paul J. Lucas
+**      Copyright (C) 2014-2020  Paul J. Lucas
 **
 **      This program is free software; you can redistribute it and/or modify
 **      it under the terms of the GNU General Public License as published by
@@ -71,6 +71,9 @@ int main() {
   PRINT_TYPE_INFO( signed char );
   PRINT_TYPE_INFO( unsigned char );
   PRINT_TYPE_INFO( wchar_t );
+#if __cplusplus > 201703L
+  PRINT_TYPE_INFO( char8_t );
+#endif
 #if __cplusplus >= 201103L
   PRINT_TYPE_INFO( char16_t );
   PRINT_TYPE_INFO( char32_t );
