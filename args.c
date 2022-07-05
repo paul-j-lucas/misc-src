@@ -56,13 +56,12 @@ int main( int argc, char *argv[] ) {
   };
 
   char const *const argv0_orig = argv[0];
-  int i, opt;
   unsigned suppress_flags = 0;
 
   me = basename( argv[0] );
 
   optind = opterr = 1;
-  while ( (opt = getopt( argc, argv, "0ehn" )) != EOF ) {
+  for ( int opt; (opt = getopt( argc, argv, "0ehn" )) != EOF; ) {
     switch ( opt ) {
       case '0': SET_SUPPRESS( NULL );    break;
       case 'e': suppress_flags = ~0u;    break;
@@ -76,6 +75,7 @@ int main( int argc, char *argv[] ) {
   if ( !GET_SUPPRESS( HEADER ) )
     printf( "argc argv\n" );
 
+  int i;
   if ( GET_SUPPRESS( NUMBERS ) ) {
     printf( "%s\n", argv0_orig );
     for ( i = 0; i < argc; ++i )
