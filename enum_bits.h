@@ -8,50 +8,43 @@
 
 #include <type_traits>
 
-template<typename EnumType>
-    requires std::is_enum_v<EnumType>
+template<typename EnumType> requires std::is_enum_v<EnumType>
 constexpr EnumType operator|( EnumType lhs, EnumType rhs ) {
     using U = std::underlying_type_t<EnumType>;
     return static_cast<EnumType>( static_cast<U>(lhs) | static_cast<U>(rhs) );
 }
 
-template<typename EnumType>
-    requires std::is_enum_v<EnumType>
+template<typename EnumType> requires std::is_enum_v<EnumType>
 constexpr EnumType operator&( EnumType lhs, EnumType rhs ) {
     using U = std::underlying_type_t<EnumType>;
     return static_cast<EnumType>( static_cast<U>(lhs) & static_cast<U>(rhs) );
 }
 
-template<typename EnumType>
-    requires std::is_enum_v<EnumType>
+template<typename EnumType> requires std::is_enum_v<EnumType>
 constexpr EnumType operator^( EnumType lhs, EnumType rhs ) {
     using U = std::underlying_type_t<EnumType>;
     return static_cast<EnumType>( static_cast<U>(lhs) ^ static_cast<U>(rhs) );
 }
 
-template<typename EnumType>
-    requires std::is_enum_v<EnumType>
+template<typename EnumType> requires std::is_enum_v<EnumType>
 constexpr EnumType operator~( EnumType e ) {
     using U = std::underlying_type_t<EnumType>;
     return static_cast<EnumType>( ~static_cast<U>( e ) );
 }
 
-template<typename EnumType>
-    requires std::is_enum_v<EnumType>
+template<typename EnumType> requires std::is_enum_v<EnumType>
 constexpr EnumType operator|=( EnumType &lhs, EnumType rhs ) {
     lhs = lhs | rhs;
     return lhs;
 }
 
-template<typename EnumType>
-    requires std::is_enum_v<EnumType>
+template<typename EnumType> requires std::is_enum_v<EnumType>
 constexpr EnumType operator&=( EnumType &lhs, EnumType rhs ) {
     lhs = lhs & rhs;
     return lhs;
 }
 
-template<typename EnumType>
-    requires std::is_enum_v<EnumType>
+template<typename EnumType> requires std::is_enum_v<EnumType>
 constexpr EnumType operator^=( EnumType &lhs, EnumType rhs ) {
     lhs = lhs ^ rhs;
     return lhs;
