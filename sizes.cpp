@@ -95,7 +95,7 @@ int main() {
   PRINT_TYPE_INFO( signed char );
   PRINT_TYPE_INFO( unsigned char );
   PRINT_TYPE_INFO( wchar_t );
-#if __cplusplus > 201703L
+#if __cplusplus >= 202002L
   PRINT_TYPE_INFO( char8_t );
 #endif
 #if __cplusplus >= 201103L
