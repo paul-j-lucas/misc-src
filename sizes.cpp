@@ -52,6 +52,30 @@ inline int number_limit( unsigned char c ) {
   return static_cast<int>( c );
 }
 
+// ostream<char> doesn't know how to << wchar_t
+inline int number_limit( wchar_t c ) {
+  return static_cast<int>( c );
+}
+
+#if __cplusplus > 201703L
+// ostream<char> doesn't know how to << char8_t
+inline unsigned number_limit( char8_t c ) {
+  return static_cast<unsigned>( c );
+}
+#endif
+
+#if __cplusplus >= 201103L
+// ostream<char> doesn't know how to << char16_t
+inline unsigned number_limit( char16_t c ) {
+  return static_cast<unsigned>( c );
+}
+
+// ostream<char> doesn't know how to << char32_t
+inline unsigned long number_limit( char32_t c ) {
+  return static_cast<unsigned long>( c );
+}
+#endif
+
 template<typename T>
 void print_type_info( char const *type_name, T ) {
   cout << left << setw( name_width ) << type_name << right
