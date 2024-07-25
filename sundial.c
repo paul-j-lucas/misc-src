@@ -31,17 +31,17 @@
  * Calculate the Equation of Time discrepancy for a sundial.
  *
  * @param year The year to use.  It must be &ge; 2000.
- * @param day The zero-based day within the year.
+ * @param day_of_year The zero-based day of the year.
  * @return Returns the EoT discrepancy in minutes where negative values are
  * "slow."
  *
  * @sa https://en.wikipedia.org/wiki/Equation_of_time
  */
-double calc_eot_min( unsigned year, unsigned day ) {
+double calc_eot_min( unsigned year, unsigned day_of_year ) {
   assert( year >= 2000 );
-  assert( day <= 366 );
+  assert( day_of_year <= 366 );
 
-  double const D = 6.24004077 + 0.01720197 * (365.25 * (year - 2000) + day);
+  double const D = 6.24004077 + 0.01720197 * (365.25 * (year - 2000) + day_of_year);
   double const orbit = -7.659 * sin( D );
   double const tilt  = 9.863 * sin( 2 * D + 3.5932 );
 
