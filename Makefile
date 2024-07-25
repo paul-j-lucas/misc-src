@@ -36,7 +36,8 @@ GETHOSTNAME=	$(BIN)/gethostname
 MOD=		$(BIN)/mod
 PSYSCONF=	$(BIN)/psysconf
 SIZES=		$(BIN)/sizes
-TARGETS=	$(ARGS) $(GETHOSTNAME) $(MOD) $(PSYSCONF) $(SIZES)
+SUNDIAL=	$(BIN)/sundial
+TARGETS=	$(ARGS) $(GETHOSTNAME) $(MOD) $(PSYSCONF) $(SIZES) $(SUNDIAL)
 
 ###############################################################################
 
@@ -56,6 +57,9 @@ $(PSYSCONF): psysconf.c
 
 $(SIZES): sizes.cpp
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $<
+
+$(SUNDIAL): sundial.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -lm -o $@ $<
 
 clean:
 
