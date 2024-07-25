@@ -37,7 +37,7 @@
  *
  * @sa https://en.wikipedia.org/wiki/Equation_of_time
  */
-double eot( unsigned year, unsigned day ) {
+double calc_eot_min( unsigned year, unsigned day ) {
   assert( year >= 2000 );
   assert( day <= 366 );
 
@@ -49,6 +49,18 @@ double eot( unsigned year, unsigned day ) {
 }
 
 /**
+ * Calculate the longitude discrepancy for a sundial.
+ *
+ * @param sundial_long The sundial's longitude.
+ * @return Returns the longitude discrepancy in minutes where negative values
+ * are "slow."
+ */
+double calc_long_min( double sundial_long ) {
+  double const central_long = round( sundial_long / 15 ) * 15;
+  return (sundial_long - central_long) * 4;
+}
+
+/**
  * Prints the solar hour, equation-of-time correction, longitude correction,
  * and clock time.
  *
@@ -57,23 +69,19 @@ double eot( unsigned year, unsigned day ) {
  * @param is_dst Is daylight savings time in effect?
  * @param solar_hour The solar hour to use.
  * @param eot_min The equation-of-time discrepancy in minutes.
- * @param sundial_long The sundial's longitude.
+ * @param long_min The sundial's longitude discrepancy in minutes.
  */
 void print_sundial_time( unsigned month, unsigned day_of_month, bool is_dst,
                          unsigned solar_hour, double eot_min,
-                         double sundial_long ) {
+                         double long_min ) {
   assert( month >= 1 && month <=12 );
   assert( day_of_month <= 31 );
   assert( solar_hour >= 6 && solar_hour <= 20 );
   assert( eot_min > -15 && eot_min < 17 );
-  assert( sundial_long >= -180 && sundial_long <= 180 );
-
-  double const central_long = round( sundial_long / 15 ) * 15;
-  double const long_diff    = central_long - sundial_long;
-  double const long_min     = long_diff * 4;
+  assert( long_min >= -30 && long_min <= 30 );
 
   unsigned clock_hour = solar_hour + is_dst;
-  int      clock_min  = round( long_min - eot_min );
+  int      clock_min  = round( -(long_min + eot_min) );
 
   if ( clock_min < 0 ) {
     --clock_hour;
@@ -83,7 +91,7 @@ void print_sundial_time( unsigned month, unsigned day_of_month, bool is_dst,
   printf( "%2u/%02u %02u:00 %+d %+6.2f %+6.2f %02u:%02d\n",
     month, day_of_month,
     solar_hour, is_dst,
-    - eot_min, long_min,
+    - eot_min, - long_min,
     clock_hour, clock_min
   );
 }
@@ -102,8 +110,8 @@ int main( void ) {
     tm->tm_mday,                        // day of month (1 - 31)
     tm->tm_isdst,
     12,
-    eot( tm->tm_year + 1900, tm->tm_yday ),
-    sundial_long
+    calc_eot_min( tm->tm_year + 1900, tm->tm_yday ),
+    calc_long_min( sundial_long )
   );
 }
 
