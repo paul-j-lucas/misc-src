@@ -68,29 +68,34 @@ double calc_long_min( double sundial_long ) {
  * @param day_of_month The 1-based day of \a month.
  * @param is_dst Is daylight savings time in effect?
  * @param solar_hour The solar hour to use.
+ * @param solar_min The solar minute to use.
  * @param eot_min The equation-of-time discrepancy in minutes.
  * @param long_min The sundial's longitude discrepancy in minutes.
  */
 void print_sundial_time( unsigned month, unsigned day_of_month, bool is_dst,
-                         unsigned solar_hour, double eot_min,
-                         double long_min ) {
-  assert( month >= 1 && month <=12 );
+                         unsigned solar_hour, unsigned solar_min,
+                         double eot_min, double long_min ) {
+  assert( month >= 1 && month <= 12 );
   assert( day_of_month <= 31 );
   assert( solar_hour >= 6 && solar_hour <= 20 );
+  assert( solar_min >= 0 && solar_min < 60 );
   assert( eot_min > -15 && eot_min < 17 );
   assert( long_min >= -30 && long_min <= 30 );
 
   unsigned clock_hour = solar_hour + is_dst;
-  int      clock_min  = round( -(long_min + eot_min) );
+  int      clock_min  = solar_min  + round( -(long_min + eot_min) );
 
   if ( clock_min < 0 ) {
     --clock_hour;
     clock_min += 60;
+  } else if ( clock_min > 59 ) {
+    ++clock_hour;
+    clock_min -= 60;
   }
 
-  printf( "%2u/%02u %02u:00 %+d %+6.2f %+6.2f %02u:%02d\n",
+  printf( "%2u/%02u %02u:%02u %+d %+6.2f %+6.2f %02u:%02d\n",
     month, day_of_month,
-    solar_hour, is_dst,
+    solar_hour, solar_min, is_dst,
     - eot_min, - long_min,
     clock_hour, clock_min
   );
@@ -109,7 +114,7 @@ int main( void ) {
     tm->tm_mon + 1,                     // month of year (0 - 11)
     tm->tm_mday,                        // day of month (1 - 31)
     tm->tm_isdst,
-    12,
+    12, 0,
     calc_eot_min( tm->tm_year + 1900, tm->tm_yday ),
     calc_long_min( sundial_long )
   );
