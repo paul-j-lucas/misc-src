@@ -78,7 +78,7 @@ void print_sundial_time( unsigned month, unsigned day_of_month, bool is_dst,
                          double eot_min, double long_min ) {
   assert( month >= 1 && month <= 12 );
   assert( day_of_month <= 31 );
-  assert( solar_hour >= 5 && solar_hour <= 7 );
+  assert( solar_hour >= 5 && solar_hour <= 20 );
   assert( solar_min >= 0 && solar_min < 60 );
   assert( eot_min > -15 && eot_min < 17 );
   assert( long_min >= -30 && long_min <= 30 );
