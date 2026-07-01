@@ -24,7 +24,7 @@ BIN=		$(HOME)/bin
 
 # Compiler & linker options.
 CFLAGS=		-O2 -Wall
-CXXFLAGS=	$(CFLAGS) -std=c++2a
+CXXFLAGS=	$(CFLAGS)
 LDFLAGS=	
 
 # Commands.

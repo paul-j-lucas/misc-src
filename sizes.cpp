@@ -23,14 +23,15 @@
 #include <iomanip>
 #include <iostream>
 #include <limits>
-#include <unistd.h>
+#include <stddef.h>
+#include <time.h>
 
 using namespace std;
 
-int const name_width          = 18;
-int const sizeof_width_bits   =  3;
-int const sizeof_width_bytes  =  2;
-int const limit_width         = 20;
+constexpr int name_width          = 18;
+constexpr int sizeof_width_bits   =  3;
+constexpr int sizeof_width_bytes  =  2;
+constexpr int limit_width         = 20;
 
 template<typename T>
 inline T number_limit( T t ) {
@@ -62,7 +63,7 @@ inline int number_limit( wchar_t c ) {
 inline unsigned number_limit( char8_t c ) {
   return static_cast<unsigned>( c );
 }
-#endif
+#endif /* __cplusplus > 201703L */
 
 #if __cplusplus >= 201103L
 // ostream<char> doesn't know how to << char16_t
@@ -74,7 +75,7 @@ inline unsigned number_limit( char16_t c ) {
 inline unsigned long number_limit( char32_t c ) {
   return static_cast<unsigned long>( c );
 }
-#endif
+#endif /* __cplusplus >= 201103L */
 
 template<typename T>
 void print_type_info( char const *type_name, T ) {
@@ -97,11 +98,11 @@ int main() {
   PRINT_TYPE_INFO( wchar_t );
 #if __cplusplus >= 202002L
   PRINT_TYPE_INFO( char8_t );
-#endif
+#endif /* __cplusplus >= 202002L */
 #if __cplusplus >= 201103L
   PRINT_TYPE_INFO( char16_t );
   PRINT_TYPE_INFO( char32_t );
-#endif
+#endif /* __cplusplus >= 201103L */
 
   PRINT_TYPE_INFO( short );
   PRINT_TYPE_INFO( int );
@@ -123,8 +124,6 @@ int main() {
   PRINT_TYPE_INFO( off_t );
   PRINT_TYPE_INFO( ptrdiff_t );
   PRINT_TYPE_INFO( time_t );
-
-  return 0;
 }
 
 /* vim:set et sw=2 ts=2: */
