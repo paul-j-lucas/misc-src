@@ -18,53 +18,52 @@
 **      along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* standard */
+// standard
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sysexits.h>
 
-/*****************************************************************************/
+////////// local variables ////////////////////////////////////////////////////
 
-typedef unsigned long long number_t;
+static char const *me;                  // executable name
 
-static char const *me;                  /* executable name */
+////////// local functions ////////////////////////////////////////////////////
 
-static void usage( void ) {
-  fprintf( stderr, "usage: %s <n> <m>\n", me );
+_Noreturn static void print_usage( void ) {
+  fprintf( stderr, "usage: %s <n> <d>\n", me );
   exit( EX_USAGE );
 }
 
-static number_t parse_ull( char const *s ) {
-  char *end;
+static unsigned long long parse_ull( char const *s ) {
+  char *end = NULL;
   errno = 0;
-  number_t const n = strtoull( s, &end, 10 );
-  if ( errno )
-    usage();
-  return n;
+  unsigned long long const n = strtoull( s, &end, 10 );
+  if ( errno == 0 && *end == '\0' )
+    return n;
+  print_usage();
 }
 
-/*****************************************************************************/
+////////// extern functions ///////////////////////////////////////////////////
 
 int main( int argc, char const *argv[] ) {
   me = strrchr( argv[0], '/' );         /* determine base name... */
   me = me ? me + 1 : argv[0];           /* ...of executable */
 
   if ( --argc != 2 )
-    usage();
+    print_usage();
 
-  number_t const m = parse_ull( argv[2] );
-  if ( m == 0 ) {
+  unsigned long long const n = parse_ull( argv[1] );
+  unsigned long long const d = parse_ull( argv[2] );
+
+  if ( d == 0 ) {
     fprintf( stderr, "%s: divisor must not be zero\n", me );
     exit( EX_DATAERR );
   }
 
-  number_t const n = parse_ull( argv[1] );
-
-  printf( "%llu\n", n % m );
-  exit( EX_OK );
+  printf( "%llu\n", n % d );
 }
 
-/*****************************************************************************/
+///////////////////////////////////////////////////////////////////////////////
 /* vim:set et sw=2 ts=2: */

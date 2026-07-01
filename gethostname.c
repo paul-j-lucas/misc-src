@@ -5,12 +5,11 @@
 
 int main( void ) {
   char hostname[ MAXHOSTNAMELEN ];
-  int result = gethostname( hostname, sizeof( hostname ) );
-  if ( result == -1 ) {
+  if ( gethostname( hostname, sizeof hostname ) == -1 ) {
     perror( NULL );
-    exit( EXIT_FAILURE );
+    exit( 1 );
   }
-  printf( "%s\n", hostname );
-  exit( EXIT_SUCCESS );
+  puts( hostname );
 }
+
 /* vim:set et sw=2 ts=2: */

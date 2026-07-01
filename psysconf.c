@@ -22,7 +22,9 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#define PRINT_SYSCONF(C) printf( #C " = %ld\n", sysconf( _SC_##C ) )
+#define PRINT_SYSCONF(C)          printf( #C " = %ld\n", sysconf( _SC_##C ) )
+
+////////// extern functions ///////////////////////////////////////////////////
 
 int main( void ) {
   PRINT_SYSCONF( ARG_MAX );
@@ -40,4 +42,5 @@ int main( void ) {
   PRINT_SYSCONF( TZNAME_MAX );
 }
 
+///////////////////////////////////////////////////////////////////////////////
 /* vim:set et sw=2 ts=2: */
