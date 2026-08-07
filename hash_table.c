@@ -42,18 +42,21 @@ static unsigned const HT_PRIME[] = {
 /**
  * Grows a hash table.
  *
- * @param ht The hash table to grow.
+ * @param table The hash table to grow.
  */
-static void ht_grow( hash_table_t *ht ) {
-  assert( ht != NULL );
+static void ht_grow( hash_table_t *table ) {
+  assert( table != NULL );
 
-  unsigned const new_n_buckets = HT_PRIME[ ++ht->prime_idx ];
+  unsigned const old_n_buckets = HT_PRIME[ table->prime_idx ];
+  if ( likely( table->prime_idx < ARRAY_SIZE( HT_PRIME ) - 1 ) )
+    ++table->prime_idx;
+  unsigned const new_n_buckets = HT_PRIME[ table->prime_idx ];
   ht_entry_t *const new_buckets = calloc( new_n_buckets, sizeof(ht_entry_t) );
 
-  for ( unsigned b = 0; b < new_n_buckets; ++b ) {
-    ht_hash_val_t const hash = ht->buckets[b].hash;
-    for ( ht_entry_t *entry = ht->buckets[b].next, *next;
+  for ( unsigned b = 0; b < old_n_buckets; ++b ) {
+    for ( ht_entry_t *entry = table->buckets[b].next, *next;
           entry != NULL; entry = next ) {
+      ht_hash_val_t const hash = entry->hash;
       ht_entry_t *const new_head = &new_buckets[ hash % new_n_buckets ];
 
       next = entry->next;
@@ -63,22 +66,21 @@ static void ht_grow( hash_table_t *ht ) {
       if ( new_head->next != NULL )
         new_head->next->prev = entry;
       new_head->next = entry;
-      new_head->hash = hash;
     } // for
   } // for
 
-  free( ht->buckets );
-  ht->buckets = new_buckets;
+  free( table->buckets );
+  table->buckets = new_buckets;
 }
 
 ////////// extern functions ///////////////////////////////////////////////////
 
-void ht_cleanup( hash_table_t *ht, ht_free_fn_t free_fn ) {
-  if ( ht == NULL )
+void ht_cleanup( hash_table_t *table, ht_free_fn_t free_fn ) {
+  if ( table == NULL || table->buckets == NULL )
     return;
 
-  for ( unsigned b = 0; b < HT_PRIME[ ht->prime_idx ]; ++b ) {
-    for ( ht_entry_t *entry = ht->buckets[b].next, *next;
+  for ( unsigned b = 0; b < HT_PRIME[ table->prime_idx ]; ++b ) {
+    for ( ht_entry_t *entry = table->buckets[b].next, *next;
           entry != NULL; entry = next ) {
       if ( free_fn != NULL )
         (*free_fn)( entry->data );
@@ -87,49 +89,49 @@ void ht_cleanup( hash_table_t *ht, ht_free_fn_t free_fn ) {
     }
   } // for
 
-  free( ht->buckets );
-  *ht = (hash_table_t){ 0 };
+  free( table->buckets );
+  *table = (hash_table_t){ 0 };
 }
 
-void ht_delete( hash_table_t *ht, ht_entry_t *entry ) {
-  assert( ht != NULL );
+void ht_delete( hash_table_t *table, ht_entry_t *entry ) {
+  assert( table != NULL );
   assert( entry != NULL );
 
   entry->prev->next = entry->next;
   if ( entry->next != NULL )
     entry->next->prev = entry->prev;
   free( entry );
-  --ht->size;
+  --table->size;
 }
 
-ht_entry_t* ht_find( hash_table_t *ht, void const *key ) {
-  assert( ht != NULL );
-  assert( key != NULL );
+ht_entry_t* ht_find( hash_table_t const *table, void const *data ) {
+  assert( table != NULL );
+  assert( data != NULL );
 
-  unsigned const b = (*ht->hash_fn)( key ) % HT_PRIME[ ht->prime_idx ];
-  for ( ht_entry_t *entry = ht->buckets[b].next; entry != NULL;
+  unsigned const b = (*table->hash_fn)( data ) % HT_PRIME[ table->prime_idx ];
+  for ( ht_entry_t *entry = table->buckets[b].next; entry != NULL;
         entry = entry->next ) {
-    if ( (*ht->cmp_fn)( key, entry->data ) == 0 )
+    if ( (*table->cmp_fn)( data, entry->data ) == 0 )
       return entry;
   } // for
 
   return NULL;
 }
 
-void ht_init( hash_table_t *ht, double max_lf, unsigned est_size,
+void ht_init( hash_table_t *table, double max_lf, unsigned est_size,
               ht_cmp_fn_t cmp_fn, ht_hash_fn_t hash_fn ) {
-  assert( ht != NULL );
+  assert( table != NULL );
   assert( max_lf > 0.0 );
   assert( cmp_fn != NULL );
   assert( hash_fn != NULL );
 
   unsigned prime_idx = 0;
-  for ( ; prime_idx < ARRAY_SIZE( HT_PRIME ); ++prime_idx ) {
+  for ( ; prime_idx < ARRAY_SIZE( HT_PRIME ) - 1; ++prime_idx ) {
     if ( HT_PRIME[ prime_idx ] * max_lf >= est_size )
       break;
   } // for
 
-  *ht = (hash_table_t){
+  *table = (hash_table_t){
     .buckets = calloc( HT_PRIME[ prime_idx ], sizeof(ht_entry_t) ),
     .cmp_fn = cmp_fn,
     .hash_fn = hash_fn,
@@ -138,47 +140,51 @@ void ht_init( hash_table_t *ht, double max_lf, unsigned est_size,
   };
 }
 
-ht_insert_rv_t ht_insert( hash_table_t *ht, void const *key,
-                          size_t data_size ) {
-  ht_hash_val_t const hash = (*ht->hash_fn)( key );
-  unsigned const n_buckets = HT_PRIME[ ht->prime_idx ];
-  unsigned const b = hash % n_buckets;
-  ht_entry_t *const head = &ht->buckets[b], *entry;
+ht_insert_rv_t ht_insert( hash_table_t *table, void *data, size_t data_size ) {
+  ht_hash_val_t const hash = (*table->hash_fn)( data );
 
-  for ( entry = head->next; entry != NULL; entry = entry->next ) {
-    if ( (*ht->cmp_fn)( key, entry->data ) == 0 )
+  unsigned n_buckets = HT_PRIME[ table->prime_idx ];
+  unsigned b = hash % n_buckets;
+  ht_entry_t *head = &table->buckets[b];
+
+  for ( ht_entry_t *entry = head->next; entry != NULL; entry = entry->next ) {
+    if ( (*table->cmp_fn)( data, entry->data ) == 0 )
       return (ht_insert_rv_t){ entry, .inserted = false };
   } // for
 
-  entry = malloc( sizeof(ht_entry_t) + data_size );
-  *entry = (ht_entry_t){ .next = head->next, .prev = head };
+  double const lf = ++table->size / (double)n_buckets;
+  if ( lf >= table->max_lf ) {
+    ht_grow( table );
+    n_buckets = HT_PRIME[ table->prime_idx ];
+    b = hash % n_buckets;
+    head = &table->buckets[b];
+  }
+
+  ht_entry_t *const entry = malloc( sizeof(ht_entry_t) + data_size );
+  *entry = (ht_entry_t){ .next = head->next, .prev = head, .hash = hash };
   if ( head->next != NULL )
     head->next->prev = entry;
-  *head = (ht_entry_t){ .next = entry, .hash = hash };
-
-  double const lf = ++ht->size / (double)n_buckets;
-  if ( lf >= ht->max_lf )
-    ht_grow( ht );
+  head->next = entry;
 
   return (ht_insert_rv_t){ entry, .inserted = true };
 }
 
-void ht_iter_init( ht_iter_t *it, hash_table_t *ht ) {
+void ht_iterator_init( ht_iterator_t *it, hash_table_t *table ) {
   assert( it != NULL );
-  assert( ht != NULL );
+  assert( table != NULL );
 
-  *it = (ht_iter_t){
-    .ht = ht,
+  *it = (ht_iterator_t){
+    .table = table,
     .bucket_idx = (unsigned)-1,
-    .n_buckets = HT_PRIME[ ht->prime_idx ]
+    .n_buckets = HT_PRIME[ table->prime_idx ]
   };
 }
 
-ht_entry_t* ht_next( ht_iter_t *it ) {
+ht_entry_t* ht_iterator_next( ht_iterator_t *it ) {
   assert( it != NULL );
 
   for (;;) {
-    assert( it->n_buckets == HT_PRIME[it->ht->prime_idx] );
+    assert( it->n_buckets == HT_PRIME[it->table->prime_idx] );
     if ( it->next != NULL ) {
       ht_entry_t *const entry = it->next;
       it->next = it->next->next;
@@ -186,7 +192,7 @@ ht_entry_t* ht_next( ht_iter_t *it ) {
     }
     if ( ++it->bucket_idx == it->n_buckets )
       return NULL;
-    it->next = it->ht->buckets[ it->bucket_idx ].next;
+    it->next = it->table->buckets[ it->bucket_idx ].next;
   } // for
 }
 

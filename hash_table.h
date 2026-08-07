@@ -63,7 +63,7 @@ typedef struct hash_table     hash_table_t;
 typedef struct ht_entry       ht_entry_t;
 typedef uint64_t              ht_hash_val_t;
 typedef struct ht_insert_rv   ht_insert_rv_t;
-typedef struct ht_iter        ht_iter_t;
+typedef struct ht_iterator    ht_iterator_t;
 
 /**
  * The signature for a function passed to ht_init() used to compare entry data.
@@ -114,11 +114,9 @@ struct hash_table {
  * table is cleaned up.
  */
 struct ht_entry {
-  ht_entry_t       *next;               ///< Next entry, if any.
-  union {
-    ht_hash_val_t   hash;               ///< Bucket hash (fake head entries).
-    ht_entry_t     *prev;               ///< Previous entry (real entries).
-  };
+  ht_entry_t   *next;                   ///< Next entry, if any.
+  ht_entry_t   *prev;                   ///< Previous entry, if any.
+  ht_hash_val_t hash;                   ///< Entry hash.
   alignas(max_align_t) char data[];     ///< Entry data.
 };
 
@@ -148,8 +146,8 @@ struct ht_insert_rv {
 /**
  * An iterator for a hash_table.
  */
-struct ht_iter {
-  hash_table_t *ht;                     ///< Hash table being iterated over.
+struct ht_iterator {
+  hash_table_t *table;                  ///< Hash table being iterated over.
   ht_entry_t   *next;                   ///< Next entry, if any.
   unsigned      bucket_idx;             ///< Current bucket index.
   unsigned      n_buckets;              ///< Number of buckets.
@@ -160,58 +158,59 @@ struct ht_iter {
 /**
  * Cleans-up a hash table.
  *
- * @param ht The hash table to clean up.  If NULL, does nothing.
+ * @param table The hash table to clean up.  If NULL, does nothing.
  * @param free_fn A pointer to a function used to free data associated with
  * each entry or NULL if unnecessary.
  *
  * @sa ht_init()
  */
-void ht_cleanup( hash_table_t *ht, ht_free_fn_t free_fn );
+void ht_cleanup( hash_table_t *table, ht_free_fn_t free_fn );
 
 /**
  * Deletes an entry from a hash table.
  *
- * @param ht The hash table to delete from.
+ * @param table The hash table to delete from.
  * @param entry The entry to delete.
  */
-void ht_delete( hash_table_t *ht, ht_entry_t *entry );
+void ht_delete( hash_table_t *table, ht_entry_t *entry );
 
 /**
  * Gets whether a hash table is empty.
  *
- * @param ht The hash table to check.
- * @return Returns `true` only if \a ht is empty.
+ * @param table The hash table to check.
+ * @return Returns `true` only if \a table is empty.
  */
-inline bool ht_empty( hash_table_t const *ht ) {
-  return ht->size == 0;
+inline bool ht_empty( hash_table_t const *table ) {
+  return table->size == 0;
 }
 
 /**
  * Attempts to find \a data within a hash table.
  *
- * @param ht The hash table to search.
+ * @param table The hash table to search.
  * @param data The data to search for.
  * @return Returns a pointer to the entry containing \a data or NULL if not
  * found.
  */
-ht_entry_t* ht_find( hash_table_t *ht, void const *data );
+ht_entry_t* ht_find( hash_table_t const *table, void const *data );
 
 /**
  * Initializes a hash table.
  *
- * @param ht The hash table to initialize.
+ * @param table The hash table to initialize.
  * @param max_lf The maximum load factor.
  * @param est_size The estimated number of entries.
  * @param cmp_fn The comparison function to use.
  * @param hash_fn The hash function to use.
  * @sa ht_cleanup()
  */
-void ht_init( hash_table_t *ht, double max_lf, unsigned est_size,
+void ht_init( hash_table_t *table, double max_lf, unsigned est_size,
               ht_cmp_fn_t cmp_fn, ht_hash_fn_t hash_fn );
 
 /**
- * Attempts to insert \a data into \a ht.
+ * Attempts to insert \a data into \a table.
  *
+ * @param table The hash table to insert into.
  * @param data The data to insert.
  * @param data_size The size of \a data.
  * @return Returns an \ref ht_insert_rv where its \ref ht_insert_rv::entry
@@ -223,18 +222,17 @@ void ht_init( hash_table_t *ht, double max_lf, unsigned est_size,
  * was inserted; \a data was _not_ copied into \ref ht_entry::data "data" ---
  * that needs to be done by the caller.
  */
-ht_insert_rv_t ht_insert( hash_table_t *ht, void const *data,
-                          size_t data_size );
+ht_insert_rv_t ht_insert( hash_table_t *table, void *data, size_t data_size );
 
 /**
  * Initializes a hash table iterator.
  *
  * @param it The hash table iterator to initialize.
- * @param ht The hash table to iterate over.
+ * @param table The hash table to iterate over.
  *
- * @sa ht_next()
+ * @sa ht_iterator_next()
  */
-void ht_iter_init( ht_iter_t *it, hash_table_t *ht );
+void ht_iterator_init( ht_iterator_t *it, hash_table_t *table );
 
 /**
  * Gets the nexy hash table entry, if any.
@@ -245,7 +243,7 @@ void ht_iter_init( ht_iter_t *it, hash_table_t *ht );
  * @param it The hash table iterator.
  * @return Returns a pointer to the next entry or NULL if none.
  */
-ht_entry_t* ht_next( ht_iter_t *it );
+ht_entry_t* ht_iterator_next( ht_iterator_t *it );
 
 ///////////////////////////////////////////////////////////////////////////////
 
